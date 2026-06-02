@@ -1,16 +1,16 @@
 import { readFile } from 'node:fs/promises';
 
-class Link {
+class Body {
   constructor(name) {
     this.name = name;
-    this.head = null;
-    this.tails = [];
-    this.count = 0;
+    this.parent = null;
+    this.children = [];
+    this.depth = 0;
   }
   
-  addTail(tail) {
-    tail.head = this;
-    this.tails.push(tail);
+  addChild(child) {
+    child.parent = this;
+    this.children.push(child);
   }
 
   toString() {
@@ -25,36 +25,36 @@ async function part1Solution() {
   const bodies = {};
 
   for (const line of data) {
-    const [base, orbit] = line.split(')');
-    if (!bodies[base]) {
-      bodies[base] = new Link(base);
+    const [parentName, childName] = line.split(')');
+    if (!bodies[parentName]) {
+      bodies[parentName] = new Body(parentName);
     }
-    if (!bodies[orbit]) {
-      bodies[orbit] = new Link(orbit);
+    if (!bodies[childName]) {
+      bodies[childName] = new Body(childName);
     }
-    bodies[base].addTail(bodies[orbit]);
+    bodies[parentName].addChild(bodies[childName]);
   }
 
-  let head = null;
+  let root = null;
 
   for (const body in bodies) {
-    if (bodies[body].head === null) {
-      head = bodies[body];
+    if (bodies[body].parent === null) {
+      root = bodies[body];
       break;
     }
   }
 
-  const queue = [head];
-  let count = 0;
+  const queue = [root];
+  let depth = 0;
   while (queue.length > 0) {
     const current = queue.shift();
-    for (const tail of current.tails) {
-      tail.count = current.count + 1;
-      queue.push(tail);
+    for (const child of current.children) {
+      child.depth = current.depth + 1;
+      queue.push(child);
     }
-    count += current.count
+    depth += current.depth
   }
-  console.log("Part 1 solution: ", count);
+  console.log("Part 1 solution: ", depth);
 }
 
 part1Solution();
@@ -63,23 +63,23 @@ function part2Solution() {
   const bodies = {};
 
   for (const line of data) {
-    const [base, orbit] = line.split(')');
-    if (!bodies[base]) {
-      bodies[base] = new Link(base);
+    const [parentName, childName] = line.split(')');
+    if (!bodies[parentName]) {
+      bodies[parentName] = new Body(parentName);
     }
-    if (!bodies[orbit]) {
-      bodies[orbit] = new Link(orbit);
+    if (!bodies[childName]) {
+      bodies[childName] = new Body(childName);
     }
-    bodies[base].addTail(bodies[orbit]);
+    bodies[parentName].addChild(bodies[childName]);
   }
 
-  let head = null;
+  let root = null;
   let you = null;
   let san = null;
 
   for (const body in bodies) {
-    if (bodies[body].head === null) {
-      head = bodies[body];
+    if (bodies[body].parent === null) {
+      root = bodies[body];
     }
     if (bodies[body].name === "YOU") {
       you = bodies[body];
@@ -89,33 +89,30 @@ function part2Solution() {
     }
   }
 
-  const queue = [head];
+  const queue = [root];
 
   while (queue.length > 0) {
     const current = queue.shift();
-    for (const tail of current.tails) {
-      tail.count = current.count + 1;
-      queue.push(tail);
+    for (const child of current.children) {
+      child.depth = current.depth + 1;
+      queue.push(child);
     }
   }
-
-  // console.log(you.head.count - san.head.count);
-  // console.log(head, you, san);
 
   let traveling = true;
   let youDistanceTraveled = 0;
   let sanDistanceTraveled = 0;
 
   while (traveling) {
-    if (you.head === san.head) {
+    if (you.parent === san.parent) {
       traveling = false;
     } else {
-      if (you.head.count > san.head.count) {
+      if (you.parent.depth > san.parent.depth) {
         youDistanceTraveled++;
-        you = you.head;
+        you = you.parent;
       } else {
         sanDistanceTraveled++;
-        san = san.head;
+        san = san.parent;
       }
     }
   }
