@@ -19,7 +19,7 @@ class Body {
 }
 
 const fileData = await readFile("day6_input.txt", "utf8");
-const data = fileData.trim().split('\n');
+const data = fileData.trim().split(/\r?\n/);
 
 async function part1Solution() {
   const bodies = {};
@@ -45,16 +45,16 @@ async function part1Solution() {
   }
 
   const queue = [root];
-  let depth = 0;
+  let totalOrbitCount = 0;
   while (queue.length > 0) {
     const current = queue.shift();
     for (const child of current.children) {
       child.depth = current.depth + 1;
       queue.push(child);
     }
-    depth += current.depth
+    totalOrbitCount += current.depth;
   }
-  console.log("Part 1 solution: ", depth);
+  console.log("Part 1 solution: ", totalOrbitCount);
 }
 
 part1Solution();
