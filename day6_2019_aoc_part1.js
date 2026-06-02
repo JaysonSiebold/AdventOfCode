@@ -18,7 +18,7 @@ class Body {
   }
 }
 
-const fileData = await readFile("input.txt", "utf8");
+const fileData = await readFile("day6_input.txt", "utf8");
 const data = fileData.trim().split('\n');
 
 async function part1Solution() {
