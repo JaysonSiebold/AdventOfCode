@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 class Body {
   constructor(name) {
@@ -20,6 +20,8 @@ class Body {
 
 const fileData = await readFile("day6_input.txt", "utf8");
 const data = fileData.trim().split(/\r?\n/);
+
+let answers = '';
 
 async function part1Solution() {
   const bodies = {};
@@ -46,6 +48,7 @@ async function part1Solution() {
 
   const queue = [root];
   let totalOrbitCount = 0;
+
   while (queue.length > 0) {
     const current = queue.shift();
     for (const child of current.children) {
@@ -54,7 +57,10 @@ async function part1Solution() {
     }
     totalOrbitCount += current.depth;
   }
-  console.log("Part 1 solution: ", totalOrbitCount);
+
+  const output = `Part 1 solution: ${totalOrbitCount}`;
+  console.log(output);
+  answers += output + '\n';
 }
 
 part1Solution();
@@ -116,7 +122,12 @@ function part2Solution() {
       }
     }
   }
-  console.log("Part 2 solution: ", youDistanceTraveled + sanDistanceTraveled);
+  
+  const output = `Part 2 solution: ${youDistanceTraveled + sanDistanceTraveled}`;
+  console.log(output);
+  answers += output + '\n';
 }
 
 part2Solution();
+
+await writeFile("day6_answers_output.txt", answers, "utf8");
